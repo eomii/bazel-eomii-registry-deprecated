@@ -3,4 +3,3 @@ module(
     version = "20211102.0",
     compatibility_level = 1,
 )
-bazel_dep(name = "rules_ll")
