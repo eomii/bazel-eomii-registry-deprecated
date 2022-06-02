@@ -1,5 +1,0 @@
-module(
-    name = "rules_ll",
-    version = "20220522.0",
-    compatibility_level = 20220522,
-)
