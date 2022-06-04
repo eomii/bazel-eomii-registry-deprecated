@@ -2,7 +2,9 @@
     "homepage": "https://github.com/eomii/rules_ll",
     "maintainers": ["aaronmondal", "neqochan"],
     "versions": [
-        "20220602.0"
+        "20220602.0",
+        "20220603.0",
+        "20220604.0"
     ],
     "yanked_versions": {}
 }
