@@ -1,0 +1,3 @@
+module(name = "spdlog", version = "1.10.0")
+
+bazel_dep(name = "rules_ll", version = "20220612.0")

@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-e+KP8F0yqKEc+6lDgegg3ShCg19/MZ+EOZMQG8q0S2Y=",
+    "patch_strip": 1,
+    "patches": {
+        "spdlog_patch.diff": "sha256-1PxG3DA4XEyP0QkLrHD6aqPjfhIgTo4Syf0604WilmU="
+    },
+    "strip_prefix": "spdlog-1.10.0",
+    "url": "https://github.com/gabime/spdlog/archive/refs/tags/v1.10.0.zip"
+}
