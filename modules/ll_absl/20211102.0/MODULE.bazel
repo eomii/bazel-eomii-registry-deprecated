@@ -1,5 +1,0 @@
-module(
-    name = "ll_absl",
-    version = "20211102.0",
-    compatibility_level = 1,
-)
