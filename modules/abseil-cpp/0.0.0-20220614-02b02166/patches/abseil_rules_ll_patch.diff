@@ -1,0 +1,3634 @@
+diff --git a/MODULE.bazel b/MODULE.bazel
+new file mode 100644
+index 00000000..2936faf3
+--- /dev/null
++++ b/MODULE.bazel
+@@ -0,0 +1,6 @@
++module(
++    name="abseil-cpp",
++    version="0.0.0-20220614-02b02166",
++    compatibility_level = 1,
++)
++bazel_dep(name = "rules_ll", version = "20220612.0")
+\ No newline at end of file
+diff --git a/absl/BUILD.bazel b/absl/BUILD.bazel
+index 7cccbbba..1ba02e73 100644
+--- a/absl/BUILD.bazel
++++ b/absl/BUILD.bazel
+@@ -13,6 +13,7 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load("@bazel_skylib//lib:selects.bzl", "selects")
+ 
+ package(default_visibility = ["//visibility:public"])
+diff --git a/absl/algorithm/BUILD.bazel b/absl/algorithm/BUILD.bazel
+index afc52639..bc656f0a 100644
+--- a/absl/algorithm/BUILD.bazel
++++ b/absl/algorithm/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,11 +26,12 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "algorithm",
+-    hdrs = ["algorithm.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["algorithm.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+     ],
+@@ -60,13 +62,14 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "container",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "container.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":algorithm",
+         "//absl/base:core_headers",
+diff --git a/absl/base/BUILD.bazel b/absl/base/BUILD.bazel
+index bd023ad8..04d7e90b 100644
+--- a/absl/base/BUILD.bazel
++++ b/absl/base/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,11 +26,12 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "atomic_hook",
+-    hdrs = ["internal/atomic_hook.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/atomic_hook.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -39,35 +41,36 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "errno_saver",
+-    hdrs = ["internal/errno_saver.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/errno_saver.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+     deps = [":config"],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "log_severity",
+     srcs = ["log_severity.cc"],
+-    hdrs = ["log_severity.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["log_severity.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":config",
+         ":core_headers",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "raw_logging_internal",
+     srcs = ["internal/raw_logging.cc"],
+-    hdrs = ["internal/raw_logging.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/raw_logging.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -80,18 +83,18 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "spinlock_wait",
+-    srcs = [
++    srcs = ["internal/spinlock_wait.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/spinlock_akaros.inc",
+         "internal/spinlock_linux.inc",
+         "internal/spinlock_posix.inc",
+-        "internal/spinlock_wait.cc",
++        "internal/spinlock_wait.h",
+         "internal/spinlock_win32.inc",
+     ],
+-    hdrs = ["internal/spinlock_wait.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl/base:__pkg__",
+     ],
+@@ -102,71 +105,61 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "config",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "config.h",
+         "options.h",
+         "policy_checks.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "dynamic_annotations",
+-    srcs = [
+-        "internal/dynamic_annotations.h",
+-    ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "dynamic_annotations.h",
++        "internal/dynamic_annotations.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":config",
+         ":core_headers",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "core_headers",
+-    srcs = [
+-        "internal/thread_annotations.h",
+-    ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "attributes.h",
+         "const_init.h",
++        "internal/thread_annotations.h",
+         "macros.h",
+         "optimization.h",
+         "port.h",
+         "thread_annotations.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":config",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "malloc_internal",
+     srcs = [
+         "internal/low_level_alloc.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/direct_mmap.h",
+         "internal/low_level_alloc.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS + select({
+-        "//conditions:default": [],
+-    }),
+-    linkopts = select({
+-        "//absl:msvc_compiler": [],
+-        "//absl:clang-cl_compiler": [],
+-        "//absl:wasm": [],
+-        "//conditions:default": ["-pthread"],
+-    }) + ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//visibility:public",
+     ],
+@@ -180,17 +173,18 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "base_internal",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/hide_ptr.h",
+         "internal/identity.h",
+         "internal/inline_variable.h",
+         "internal/invoke.h",
+         "internal/scheduling_mode.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -200,7 +194,7 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "base",
+     srcs = [
+         "internal/cycleclock.cc",
+@@ -209,7 +203,8 @@ cc_library(
+         "internal/thread_identity.cc",
+         "internal/unscaledcycleclock.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "call_once.h",
+         "casts.h",
+         "internal/cycleclock.h",
+@@ -221,17 +216,7 @@ cc_library(
+         "internal/tsan_mutex_interface.h",
+         "internal/unscaledcycleclock.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = select({
+-        "//absl:msvc_compiler": [
+-            "-DEFAULTLIB:advapi32.lib",
+-        ],
+-        "//absl:clang-cl_compiler": [
+-            "-DEFAULTLIB:advapi32.lib",
+-        ],
+-        "//absl:wasm": [],
+-        "//conditions:default": ["-pthread"],
+-    }) + ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":atomic_hook",
+         ":base_internal",
+@@ -245,13 +230,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "atomic_hook_test_helper",
+     testonly = 1,
+     srcs = ["internal/atomic_hook_test_helper.cc"],
+-    hdrs = ["internal/atomic_hook_test_helper.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/atomic_hook_test_helper.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":atomic_hook",
+         ":core_headers",
+@@ -287,12 +272,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "throw_delegate",
+     srcs = ["internal/throw_delegate.cc"],
+-    hdrs = ["internal/throw_delegate.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/throw_delegate.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -327,12 +312,13 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "exception_testing",
+     testonly = 1,
+-    hdrs = ["internal/exception_testing.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/exception_testing.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -342,20 +328,22 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "pretty_function",
+-    hdrs = ["internal/pretty_function.h"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/pretty_function.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//absl:__subpackages__"],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "exception_safety_testing",
+     testonly = 1,
+     srcs = ["internal/exception_safety_testing.cc"],
+-    hdrs = ["internal/exception_safety_testing.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/exception_safety_testing.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":config",
+         ":pretty_function",
+@@ -412,12 +400,13 @@ cc_test(
+ 
+ # Common test library made available for use in non-absl code that overrides
+ # AbslInternalSpinLockDelay and AbslInternalSpinLockWake.
+-cc_library(
++ll_library(
+     name = "spinlock_test_common",
+     testonly = 1,
+     srcs = ["spinlock_test_common.cc"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [],
++    transitive_relative_includes = [""],
+     deps = [
+         ":base",
+         ":base_internal",
+@@ -426,7 +415,6 @@ cc_library(
+         "//absl/synchronization",
+         "@com_google_googletest//:gtest",
+     ],
+-    alwayslink = 1,
+ )
+ 
+ cc_test(
+@@ -448,12 +436,13 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "spinlock_benchmark_common",
+     testonly = 1,
+     srcs = ["internal/spinlock_benchmark.cc"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl/base:__pkg__",
+     ],
+@@ -464,7 +453,6 @@ cc_library(
+         "//absl/synchronization",
+         "@com_github_google_benchmark//:benchmark_main",
+     ],
+-    alwayslink = 1,
+ )
+ 
+ cc_binary(
+@@ -479,14 +467,15 @@ cc_binary(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "endian",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/endian.h",
+         "internal/unaligned_access.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":base",
+         ":config",
+@@ -602,12 +591,13 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "scoped_set_env",
+     testonly = 1,
+     srcs = ["internal/scoped_set_env.cc"],
+-    hdrs = ["internal/scoped_set_env.h"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/scoped_set_env.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -644,12 +634,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "strerror",
+     srcs = ["internal/strerror.cc"],
+-    hdrs = ["internal/strerror.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/strerror.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -687,11 +677,12 @@ cc_binary(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "fast_type_id",
+-    hdrs = ["internal/fast_type_id.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/fast_type_id.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -712,11 +703,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "prefetch",
+-    hdrs = ["internal/prefetch.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/prefetch.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+diff --git a/absl/cleanup/BUILD.bazel b/absl/cleanup/BUILD.bazel
+index 2154d9f1..8832fa86 100644
+--- a/absl/cleanup/BUILD.bazel
++++ b/absl/cleanup/BUILD.bazel
+@@ -12,6 +12,7 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -23,11 +24,12 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "cleanup_internal",
+-    hdrs = ["internal/cleanup.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/cleanup.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:base_internal",
+         "//absl/base:core_headers",
+@@ -35,13 +37,14 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cleanup",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "cleanup.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":cleanup_internal",
+         "//absl/base:config",
+diff --git a/absl/container/BUILD.bazel b/absl/container/BUILD.bazel
+index d01d78e5..a29d6730 100644
+--- a/absl/container/BUILD.bazel
++++ b/absl/container/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,11 +26,12 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "compressed_tuple",
+-    hdrs = ["internal/compressed_tuple.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/compressed_tuple.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/utility",
+     ],
+@@ -51,11 +53,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "fixed_array",
+-    hdrs = ["fixed_array.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["fixed_array.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":compressed_tuple",
+         "//absl/algorithm",
+@@ -108,11 +111,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "inlined_vector_internal",
+-    hdrs = ["internal/inlined_vector.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/inlined_vector.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":compressed_tuple",
+         "//absl/base:core_headers",
+@@ -122,11 +126,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "inlined_vector",
+-    hdrs = ["inlined_vector.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["inlined_vector.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":inlined_vector_internal",
+         "//absl/algorithm",
+@@ -136,12 +141,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "counting_allocator",
+     testonly = 1,
+-    hdrs = ["internal/counting_allocator.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/counting_allocator.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = ["//absl/base:config"],
+ )
+@@ -193,13 +199,13 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "test_instance_tracker",
+     testonly = 1,
+     srcs = ["internal/test_instance_tracker.cc"],
+-    hdrs = ["internal/test_instance_tracker.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/test_instance_tracker.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -224,11 +230,12 @@ NOTEST_TAGS_MOBILE = [
+     "no_test_ios_x86_64",
+ ]
+ 
+-cc_library(
++ll_library(
+     name = "flat_hash_map",
+-    hdrs = ["flat_hash_map.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["flat_hash_map.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":container_memory",
+         ":hash_function_defaults",
+@@ -258,11 +265,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "flat_hash_set",
+-    hdrs = ["flat_hash_set.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["flat_hash_set.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":container_memory",
+         ":hash_function_defaults",
+@@ -293,11 +301,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "node_hash_map",
+-    hdrs = ["node_hash_map.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["node_hash_map.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":container_memory",
+         ":hash_function_defaults",
+@@ -327,11 +336,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "node_hash_set",
+-    hdrs = ["node_hash_set.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["node_hash_set.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":hash_function_defaults",
+         ":node_slot_policy",
+@@ -358,11 +368,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "container_memory",
+-    hdrs = ["internal/container_memory.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/container_memory.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/memory",
+@@ -385,11 +396,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "hash_function_defaults",
+-    hdrs = ["internal/hash_function_defaults.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/hash_function_defaults.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/hash",
+@@ -415,13 +427,13 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "hash_generator_testing",
+     testonly = 1,
+     srcs = ["internal/hash_generator_testing.cc"],
+-    hdrs = ["internal/hash_generator_testing.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/hash_generator_testing.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":hash_policy_testing",
+         "//absl/memory",
+@@ -430,12 +442,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "hash_policy_testing",
+     testonly = 1,
+-    hdrs = ["internal/hash_policy_testing.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/hash_policy_testing.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/hash",
+         "//absl/strings",
+@@ -453,11 +466,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "hash_policy_traits",
+-    hdrs = ["internal/hash_policy_traits.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/hash_policy_traits.h"],
++    transitive_relative_includes = [""],
+     deps = ["//absl/meta:type_traits"],
+ )
+ 
+@@ -472,35 +486,37 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "hashtable_debug",
+-    hdrs = ["internal/hashtable_debug.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/hashtable_debug.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":hashtable_debug_hooks",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "hashtable_debug_hooks",
+-    hdrs = ["internal/hashtable_debug_hooks.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/hashtable_debug_hooks.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "hashtablez_sampler",
+     srcs = [
+         "internal/hashtablez_sampler.cc",
+         "internal/hashtablez_sampler_force_weak_definition.cc",
+     ],
+-    hdrs = ["internal/hashtablez_sampler.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/hashtablez_sampler.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base",
+         "//absl/base:config",
+@@ -533,11 +549,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "node_slot_policy",
+-    hdrs = ["internal/node_slot_policy.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/node_slot_policy.h"],
++    transitive_relative_includes = [""],
+     deps = ["//absl/base:config"],
+ )
+ 
+@@ -553,11 +570,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "raw_hash_map",
+-    hdrs = ["internal/raw_hash_map.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/raw_hash_map.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":container_memory",
+         ":raw_hash_set",
+@@ -565,23 +583,24 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "common",
+-    hdrs = ["internal/common.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/common.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/meta:type_traits",
+         "//absl/types:optional",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "raw_hash_set",
+     srcs = ["internal/raw_hash_set.cc"],
+-    hdrs = ["internal/raw_hash_set.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/raw_hash_set.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":common",
+         ":compressed_tuple",
+@@ -675,11 +694,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "layout",
+-    hdrs = ["internal/layout.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/layout.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:core_headers",
+@@ -724,23 +744,25 @@ cc_binary(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "tracked",
+     testonly = 1,
+-    hdrs = ["internal/tracked.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/tracked.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "unordered_map_constructor_test",
+     testonly = 1,
+-    hdrs = ["internal/unordered_map_constructor_test.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/unordered_map_constructor_test.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":hash_generator_testing",
+         ":hash_policy_testing",
+@@ -748,12 +770,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "unordered_map_lookup_test",
+     testonly = 1,
+-    hdrs = ["internal/unordered_map_lookup_test.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/unordered_map_lookup_test.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":hash_generator_testing",
+         ":hash_policy_testing",
+@@ -761,12 +784,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "unordered_map_modifiers_test",
+     testonly = 1,
+-    hdrs = ["internal/unordered_map_modifiers_test.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/unordered_map_modifiers_test.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":hash_generator_testing",
+         ":hash_policy_testing",
+@@ -774,12 +798,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "unordered_set_constructor_test",
+     testonly = 1,
+-    hdrs = ["internal/unordered_set_constructor_test.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/unordered_set_constructor_test.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":hash_generator_testing",
+         ":hash_policy_testing",
+@@ -788,36 +813,39 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "unordered_set_members_test",
+     testonly = 1,
+-    hdrs = ["internal/unordered_set_members_test.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/unordered_set_members_test.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/meta:type_traits",
+         "@com_google_googletest//:gtest",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "unordered_map_members_test",
+     testonly = 1,
+-    hdrs = ["internal/unordered_map_members_test.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/unordered_map_members_test.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/meta:type_traits",
+         "@com_google_googletest//:gtest",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "unordered_set_lookup_test",
+     testonly = 1,
+-    hdrs = ["internal/unordered_set_lookup_test.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/unordered_set_lookup_test.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":hash_generator_testing",
+         ":hash_policy_testing",
+@@ -825,12 +853,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "unordered_set_modifiers_test",
+     testonly = 1,
+-    hdrs = ["internal/unordered_set_modifiers_test.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/unordered_set_modifiers_test.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":hash_generator_testing",
+         ":hash_policy_testing",
+@@ -884,18 +913,16 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "btree",
+-    srcs = [
+-        "internal/btree.h",
+-        "internal/btree_container.h",
+-    ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "btree_map.h",
+         "btree_set.h",
++        "internal/btree.h",
++        "internal/btree_container.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:public"],
+     deps = [
+         ":common",
+@@ -914,12 +941,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "btree_test_common",
+     testonly = 1,
+-    hdrs = ["btree_test.h"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["btree_test.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         ":btree",
+diff --git a/absl/debugging/BUILD.bazel b/absl/debugging/BUILD.bazel
+index 932a8e9f..86702fea 100644
+--- a/absl/debugging/BUILD.bazel
++++ b/absl/debugging/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -27,9 +28,11 @@ package(
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "stacktrace",
+-    srcs = [
++    srcs = ["stacktrace.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/stacktrace_aarch64-inl.inc",
+         "internal/stacktrace_arm-inl.inc",
+         "internal/stacktrace_config.h",
+@@ -40,11 +43,9 @@ cc_library(
+         "internal/stacktrace_unimplemented-inl.inc",
+         "internal/stacktrace_win32-inl.inc",
+         "internal/stacktrace_x86-inl.inc",
+-        "stacktrace.cc",
++        "stacktrace.h",
+     ],
+-    hdrs = ["stacktrace.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":debugging_internal",
+         "//absl/base:config",
+@@ -52,26 +53,20 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "symbolize",
+-    srcs = [
+-        "symbolize.cc",
++    srcs = ["symbolize.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
++        "internal/symbolize.h",
++        "symbolize.h",
+         "symbolize_darwin.inc",
+         "symbolize_elf.inc",
+         "symbolize_emscripten.inc",
+         "symbolize_unimplemented.inc",
+         "symbolize_win32.inc",
+     ],
+-    hdrs = [
+-        "internal/symbolize.h",
+-        "symbolize.h",
+-    ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS + select({
+-        "//absl:msvc_compiler": ["-DEFAULTLIB:dbghelp.lib"],
+-        "//absl:clang-cl_compiler": ["-DEFAULTLIB:dbghelp.lib"],
+-        "//conditions:default": [],
+-    }),
++    transitive_relative_includes = [""],
+     deps = [
+         ":debugging_internal",
+         ":demangle_internal",
+@@ -111,16 +106,16 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "examine_stack",
+     srcs = [
+         "internal/examine_stack.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/examine_stack.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         ":stacktrace",
+@@ -131,12 +126,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "failure_signal_handler",
+     srcs = ["failure_signal_handler.cc"],
+-    hdrs = ["failure_signal_handler.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["failure_signal_handler.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":examine_stack",
+         ":stacktrace",
+@@ -167,20 +162,20 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "debugging_internal",
+     srcs = [
+         "internal/address_is_readable.cc",
+         "internal/elf_mem_image.cc",
+         "internal/vdso_support.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/address_is_readable.h",
+         "internal/elf_mem_image.h",
+         "internal/vdso_support.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         "//absl/base:config",
+@@ -191,12 +186,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "demangle_internal",
+     srcs = ["internal/demangle.cc"],
+-    hdrs = ["internal/demangle.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/demangle.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         "//absl/base",
+@@ -221,12 +216,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "leak_check",
+     srcs = ["leak_check.cc"],
+-    hdrs = ["leak_check.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["leak_check.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:core_headers",
+@@ -264,13 +259,13 @@ cc_binary(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "stack_consumption",
+     testonly = 1,
+     srcs = ["internal/stack_consumption.cc"],
+-    hdrs = ["internal/stack_consumption.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/stack_consumption.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         "//absl/base:config",
+diff --git a/absl/flags/BUILD.bazel b/absl/flags/BUILD.bazel
+index 4ca687ee..7e4cfb4b 100644
+--- a/absl/flags/BUILD.bazel
++++ b/absl/flags/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,13 +26,14 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "path_util",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/path_util.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl/flags:__pkg__",
+     ],
+@@ -41,16 +43,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "program_name",
+     srcs = [
+         "internal/program_name.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/program_name.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl/flags:__pkg__",
+     ],
+@@ -63,17 +65,17 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "config",
+     srcs = [
+         "usage_config.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "config.h",
+         "usage_config.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":path_util",
+         ":program_name",
+@@ -84,16 +86,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "marshalling",
+     srcs = [
+         "marshalling.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "marshalling.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:core_headers",
+@@ -104,16 +106,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "commandlineflag_internal",
+     srcs = [
+         "internal/commandlineflag.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/commandlineflag.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//visibility:private",
+     ],
+@@ -123,16 +125,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "commandlineflag",
+     srcs = [
+         "commandlineflag.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "commandlineflag.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":commandlineflag_internal",
+         "//absl/base:config",
+@@ -142,16 +144,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "private_handle_accessor",
+     srcs = [
+         "internal/private_handle_accessor.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/private_handle_accessor.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl/flags:__pkg__",
+     ],
+@@ -163,17 +165,17 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "reflection",
+     srcs = [
+         "reflection.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/registry.h",
+         "reflection.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":commandlineflag",
+         ":commandlineflag_internal",
+@@ -187,17 +189,17 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "flag_internal",
+     srcs = [
+         "internal/flag.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/flag.h",
+         "internal/sequence_lock.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = ["//absl/base:__subpackages__"],
+     deps = [
+         ":commandlineflag",
+@@ -217,18 +219,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "flag",
+-    srcs = [
+-        "flag.cc",
+-        "internal/flag_msvc.inc",
+-    ],
+-    hdrs = [
++    srcs = ["flag.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "declare.h",
+         "flag.h",
++        "internal/flag_msvc.inc",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":config",
+         ":flag_internal",
+@@ -240,16 +240,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "usage_internal",
+     srcs = [
+         "internal/usage.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/usage.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl/flags:__pkg__",
+     ],
+@@ -269,16 +269,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "usage",
+     srcs = [
+         "usage.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "usage.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":usage_internal",
+         "//absl/base:config",
+@@ -288,15 +288,15 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "parse",
+     srcs = ["parse.cc"],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/parse.h",
+         "parse.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":commandlineflag",
+         ":commandlineflag_internal",
+diff --git a/absl/functional/BUILD.bazel b/absl/functional/BUILD.bazel
+index dbfa81f3..81b05a62 100644
+--- a/absl/functional/BUILD.bazel
++++ b/absl/functional/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,12 +26,14 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "bind_front",
+-    srcs = ["internal/front_binder.h"],
+-    hdrs = ["bind_front.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
++        "bind_front.h",
++        "internal/front_binder.h",
++    ],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:base_internal",
+         "//absl/container:compressed_tuple",
+@@ -51,12 +54,14 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "function_ref",
+-    srcs = ["internal/function_ref.h"],
+-    hdrs = ["function_ref.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
++        "function_ref.h",
++        "internal/function_ref.h",
++    ],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:base_internal",
+         "//absl/base:core_headers",
+diff --git a/absl/hash/BUILD.bazel b/absl/hash/BUILD.bazel
+index bcc316f9..d8a6cf39 100644
+--- a/absl/hash/BUILD.bazel
++++ b/absl/hash/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,15 +26,15 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "hash",
+-    srcs = [
+-        "internal/hash.cc",
++    srcs = ["internal/hash.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
++        "hash.h",
+         "internal/hash.h",
+     ],
+-    hdrs = ["hash.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":city",
+         ":low_level_hash",
+@@ -51,11 +52,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "hash_testing",
+     testonly = 1,
+-    hdrs = ["hash_testing.h"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["hash_testing.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":spy_hash_state",
+         "//absl/meta:type_traits",
+@@ -107,12 +110,13 @@ cc_binary(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "spy_hash_state",
+     testonly = 1,
+-    hdrs = ["internal/spy_hash_state.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/spy_hash_state.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         ":hash",
+@@ -121,14 +125,14 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "city",
+     srcs = ["internal/city.cc"],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/city.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:core_headers",
+@@ -147,12 +151,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "low_level_hash",
+     srcs = ["internal/low_level_hash.cc"],
+-    hdrs = ["internal/low_level_hash.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/low_level_hash.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         "//absl/base:config",
+diff --git a/absl/memory/BUILD.bazel b/absl/memory/BUILD.bazel
+index 389aedf3..b1a889e3 100644
+--- a/absl/memory/BUILD.bazel
++++ b/absl/memory/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,14 +26,15 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "memory",
+-    hdrs = ["memory.h"],
+-    copts = ABSL_DEFAULT_COPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
+     defines = select({
+         "//conditions:default": [],
+     }),
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_hdrs = ["memory.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:core_headers",
+         "//absl/meta:type_traits",
+diff --git a/absl/meta/BUILD.bazel b/absl/meta/BUILD.bazel
+index fb379251..1deb2636 100644
+--- a/absl/meta/BUILD.bazel
++++ b/absl/meta/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,11 +26,12 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "type_traits",
+-    hdrs = ["type_traits.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["type_traits.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+     ],
+diff --git a/absl/numeric/BUILD.bazel b/absl/numeric/BUILD.bazel
+index eaa27dfd..552566a7 100644
+--- a/absl/numeric/BUILD.bazel
++++ b/absl/numeric/BUILD.bazel
+@@ -12,6 +12,7 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -23,14 +24,15 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "bits",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "bits.h",
+         "internal/bits.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:core_headers",
+@@ -66,16 +68,16 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "int128",
+-    srcs = [
+-        "int128.cc",
++    srcs = ["int128.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
++        "int128.h",
+         "int128_have_intrinsic.inc",
+         "int128_no_intrinsic.inc",
+     ],
+-    hdrs = ["int128.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":bits",
+         "//absl/base:config",
+@@ -115,13 +117,14 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "representation",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/representation.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+     ],
+diff --git a/absl/profiling/BUILD.bazel b/absl/profiling/BUILD.bazel
+index 3392c96c..40409045 100644
+--- a/absl/profiling/BUILD.bazel
++++ b/absl/profiling/BUILD.bazel
+@@ -12,6 +12,7 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -23,11 +24,12 @@ package(default_visibility = ["//visibility:private"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "sample_recorder",
+-    hdrs = ["internal/sample_recorder.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/sample_recorder.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -56,11 +58,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "exponential_biased",
+     srcs = ["internal/exponential_biased.cc"],
+-    hdrs = ["internal/exponential_biased.h"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/exponential_biased.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -84,12 +87,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "periodic_sampler",
+     srcs = ["internal/periodic_sampler.cc"],
+-    hdrs = ["internal/periodic_sampler.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/periodic_sampler.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+diff --git a/absl/random/BUILD.bazel b/absl/random/BUILD.bazel
+index d983685c..02fb53dc 100644
+--- a/absl/random/BUILD.bazel
++++ b/absl/random/BUILD.bazel
+@@ -16,6 +16,7 @@
+ 
+ # ABSL random-number generation libraries.
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -27,11 +28,12 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "random",
+-    hdrs = ["random.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["random.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":distributions",
+         ":seed_sequences",
+@@ -42,13 +44,14 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "distributions",
+     srcs = [
+         "discrete_distribution.cc",
+         "gaussian_distribution.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "bernoulli_distribution.h",
+         "beta_distribution.h",
+         "discrete_distribution.h",
+@@ -61,8 +64,7 @@ cc_library(
+         "uniform_real_distribution.h",
+         "zipf_distribution.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:base_internal",
+         "//absl/base:config",
+@@ -81,23 +83,23 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "seed_gen_exception",
+     srcs = ["seed_gen_exception.cc"],
+-    hdrs = ["seed_gen_exception.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["seed_gen_exception.h"],
++    transitive_relative_includes = [""],
+     deps = ["//absl/base:config"],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "seed_sequences",
+     srcs = ["seed_sequences.cc"],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "seed_sequences.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":seed_gen_exception",
+         "//absl/container:inlined_vector",
+@@ -109,11 +111,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "bit_gen_ref",
+-    hdrs = ["bit_gen_ref.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["bit_gen_ref.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":random",
+         "//absl/base:core_headers",
+@@ -124,11 +127,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "mock_distributions",
+     testonly = 1,
+-    hdrs = ["mock_distributions.h"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["mock_distributions.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":distributions",
+         ":mocking_bit_gen",
+@@ -138,13 +143,15 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "mocking_bit_gen",
+     testonly = 1,
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "mocking_bit_gen.h",
+     ],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":distributions",
+         ":random",
+diff --git a/absl/random/internal/BUILD.bazel b/absl/random/internal/BUILD.bazel
+index fd5b6195..be50bea7 100644
+--- a/absl/random/internal/BUILD.bazel
++++ b/absl/random/internal/BUILD.bazel
+@@ -14,6 +14,8 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
++
+ # Internal-only implementation classes for Abseil Random
+ load(
+     "//absl:copts/configure_copts.bzl",
+@@ -30,11 +32,12 @@ package(default_visibility = [
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "traits",
+-    hdrs = ["traits.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["traits.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/numeric:bits",
+@@ -42,11 +45,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "distribution_caller",
+-    hdrs = ["distribution_caller.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["distribution_caller.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:fast_type_id",
+@@ -54,13 +58,14 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "fast_uniform_bits",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "fast_uniform_bits.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":traits",
+         "//absl/base:config",
+@@ -68,20 +73,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "seed_material",
+     srcs = [
+         "seed_material.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "seed_material.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS + select({
+-        "//absl:msvc_compiler": ["-DEFAULTLIB:bcrypt.lib"],
+-        "//absl:clang-cl_compiler": ["-DEFAULTLIB:bcrypt.lib"],
+-        "//conditions:default": [],
+-    }),
++    transitive_relative_includes = [""],
+     deps = [
+         ":fast_uniform_bits",
+         "//absl/base:core_headers",
+@@ -93,21 +94,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "pool_urbg",
+     srcs = [
+         "pool_urbg.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "pool_urbg.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = select({
+-        "//absl:msvc_compiler": [],
+-        "//absl:clang-cl_compiler": [],
+-        "//absl:wasm": [],
+-        "//conditions:default": ["-pthread"],
+-    }) + ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":randen",
+         ":seed_material",
+@@ -122,38 +118,41 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "explicit_seed_seq",
+     testonly = 1,
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "explicit_seed_seq.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:endian",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "sequence_urbg",
+     testonly = 1,
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "sequence_urbg.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = ["//absl/base:config"],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "salted_seed_seq",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "salted_seed_seq.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":seed_material",
+         "//absl/container:inlined_vector",
+@@ -163,24 +162,26 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "iostream_state_saver",
+-    hdrs = ["iostream_state_saver.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["iostream_state_saver.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/meta:type_traits",
+         "//absl/numeric:int128",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "generate_real",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "generate_real.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":fastmath",
+         ":traits",
+@@ -189,21 +190,23 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "fastmath",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "fastmath.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = ["//absl/numeric:bits"],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "wide_multiply",
+-    hdrs = ["wide_multiply.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["wide_multiply.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":traits",
+         "//absl/base:config",
+@@ -212,11 +215,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "nonsecure_base",
+-    hdrs = ["nonsecure_base.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["nonsecure_base.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":pool_urbg",
+         ":salted_seed_seq",
+@@ -228,11 +232,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "pcg_engine",
+-    hdrs = ["pcg_engine.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["pcg_engine.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":fastmath",
+         ":iostream_state_saver",
+@@ -243,11 +248,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "randen_engine",
+-    hdrs = ["randen_engine.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["randen_engine.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":iostream_state_saver",
+         ":randen",
+@@ -256,32 +262,30 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "platform",
+     srcs = [
+         "randen_round_keys.cc",
+     ],
+-    hdrs = [
+-        "randen_traits.h",
+-    ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
+-    textual_hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "platform.h",
++        "randen_traits.h",
+     ],
++    transitive_relative_includes = [""],
+     deps = ["//absl/base:config"],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "randen",
+     srcs = [
+         "randen.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "randen.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":platform",
+         ":randen_hwaes",
+@@ -290,12 +294,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "randen_slow",
+     srcs = ["randen_slow.cc"],
+-    hdrs = ["randen_slow.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["randen_slow.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":platform",
+         "//absl/base:config",
+@@ -307,17 +311,17 @@ cc_library(
+ 
+ absl_random_randen_copts_init()
+ 
+-cc_library(
++ll_library(
+     name = "randen_hwaes",
+     srcs = [
+         "randen_detect.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "randen_detect.h",
+         "randen_hwaes.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":platform",
+         ":randen_hwaes_impl",
+@@ -326,18 +330,12 @@ cc_library(
+ )
+ 
+ # build with --save_temps to see assembly language output.
+-cc_library(
++ll_library(
+     name = "randen_hwaes_impl",
+-    srcs = [
+-        "randen_hwaes.cc",
+-        "randen_hwaes.h",
+-    ],
+-    copts = ABSL_DEFAULT_COPTS + ABSL_RANDOM_RANDEN_COPTS + select({
+-        "//absl:msvc_compiler": [],
+-        "//absl:clang-cl_compiler": [],
+-        "//conditions:default": ["-Wno-pass-failed"],
+-    }),
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = ["randen_hwaes.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["randen_hwaes.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":platform",
+         "//absl/base:config",
+@@ -358,19 +356,19 @@ cc_binary(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "distribution_test_util",
+     testonly = 1,
+     srcs = [
+         "chi_square.cc",
+         "distribution_test_util.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "chi_square.h",
+         "distribution_test_util.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:core_headers",
+@@ -499,21 +497,25 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "mock_helpers",
+-    hdrs = ["mock_helpers.h"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["mock_helpers.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:fast_type_id",
+         "//absl/types:optional",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "mock_overload_set",
+     testonly = 1,
+-    hdrs = ["mock_overload_set.h"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["mock_overload_set.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":mock_helpers",
+         "//absl/random:mocking_bit_gen",
+@@ -658,11 +660,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "nanobenchmark",
+     srcs = ["nanobenchmark.cc"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
+-    textual_hdrs = ["nanobenchmark.h"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["nanobenchmark.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":platform",
+         ":randen_engine",
+@@ -672,11 +675,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "uniform_helper",
+-    hdrs = ["uniform_helper.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["uniform_helper.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":traits",
+         "//absl/base:config",
+diff --git a/absl/status/BUILD.bazel b/absl/status/BUILD.bazel
+index ce0ea70c..41ce3954 100644
+--- a/absl/status/BUILD.bazel
++++ b/absl/status/BUILD.bazel
+@@ -17,6 +17,7 @@
+ # It will expand later to have utilities around `Status` like `StatusOr`,
+ # `StatusBuilder` and macros.
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -28,19 +29,19 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "status",
+     srcs = [
+-        "internal/status_internal.h",
+         "status.cc",
+         "status_payload_printer.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
++        "internal/status_internal.h",
+         "status.h",
+         "status_payload_printer.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:atomic_hook",
+         "//absl/base:core_headers",
+@@ -68,17 +69,15 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "statusor",
+-    srcs = [
++    srcs = ["statusor.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/statusor_internal.h",
+-        "statusor.cc",
+-    ],
+-    hdrs = [
+         "statusor.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":status",
+         "//absl/base",
+diff --git a/absl/strings/BUILD.bazel b/absl/strings/BUILD.bazel
+index 3f51252f..68898598 100644
+--- a/absl/strings/BUILD.bazel
++++ b/absl/strings/BUILD.bazel
+@@ -13,6 +13,7 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -27,21 +28,15 @@ package(
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "strings",
+     srcs = [
+         "ascii.cc",
+         "charconv.cc",
+         "escaping.cc",
+         "internal/charconv_bigint.cc",
+-        "internal/charconv_bigint.h",
+         "internal/charconv_parse.cc",
+-        "internal/charconv_parse.h",
+         "internal/memutil.cc",
+-        "internal/memutil.h",
+-        "internal/stl_type_traits.h",
+-        "internal/str_join_internal.h",
+-        "internal/str_split_internal.h",
+         "match.cc",
+         "numbers.cc",
+         "str_cat.cc",
+@@ -50,10 +45,17 @@ cc_library(
+         "string_view.cc",
+         "substitute.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "ascii.h",
+         "charconv.h",
+         "escaping.h",
++        "internal/charconv_bigint.h",
++        "internal/charconv_parse.h",
++        "internal/memutil.h",
++        "internal/stl_type_traits.h",
++        "internal/str_join_internal.h",
++        "internal/str_split_internal.h",
+         "internal/string_constant.h",
+         "match.h",
+         "numbers.h",
+@@ -65,8 +67,7 @@ cc_library(
+         "strip.h",
+         "substitute.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":internal",
+         "//absl/base",
+@@ -82,22 +83,22 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "internal",
+     srcs = [
+         "internal/escaping.cc",
+         "internal/ostringstream.cc",
+         "internal/utf8.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/char_map.h",
+         "internal/escaping.h",
+         "internal/ostringstream.h",
+         "internal/resize_uninitialized.h",
+         "internal/utf8.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:core_headers",
+@@ -267,7 +268,7 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cord_internal",
+     srcs = [
+         "internal/cord_internal.cc",
+@@ -278,7 +279,8 @@ cc_library(
+         "internal/cord_rep_crc.cc",
+         "internal/cord_rep_ring.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/cord_data_edge.h",
+         "internal/cord_internal.h",
+         "internal/cord_rep_btree.h",
+@@ -290,8 +292,7 @@ cc_library(
+         "internal/cord_rep_ring.h",
+         "internal/cord_rep_ring_reader.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//visibility:private",
+     ],
+@@ -391,11 +392,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cordz_update_tracker",
+-    hdrs = ["internal/cordz_update_tracker.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/cordz_update_tracker.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -414,20 +416,20 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cord",
+     srcs = [
+         "cord.cc",
+         "cord_analysis.cc",
+-        "cord_analysis.h",
+         "cord_buffer.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "cord.h",
++        "cord_analysis.h",
+         "cord_buffer.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":cord_internal",
+         ":cordz_functions",
+@@ -453,12 +455,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cordz_handle",
+     srcs = ["internal/cordz_handle.cc"],
+-    hdrs = ["internal/cordz_handle.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/cordz_handle.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -470,12 +472,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cordz_info",
+     srcs = ["internal/cordz_info.cc"],
+-    hdrs = ["internal/cordz_info.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/cordz_info.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -496,11 +498,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cordz_update_scope",
+-    hdrs = ["internal/cordz_update_scope.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/cordz_update_scope.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -528,12 +531,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cordz_sample_token",
+     srcs = ["internal/cordz_sample_token.cc"],
+-    hdrs = ["internal/cordz_sample_token.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/cordz_sample_token.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -544,12 +547,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cordz_functions",
+     srcs = ["internal/cordz_functions.cc"],
+-    hdrs = ["internal/cordz_functions.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/cordz_functions.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -561,11 +564,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cordz_statistics",
+-    hdrs = ["internal/cordz_statistics.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/cordz_statistics.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -668,14 +672,15 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cord_test_helpers",
+     testonly = 1,
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "cord_test_helpers.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":cord",
+         ":cord_internal",
+@@ -684,12 +689,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cord_rep_test_util",
+     testonly = 1,
+-    hdrs = ["internal/cord_rep_test_util.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/cord_rep_test_util.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":cord_internal",
+         ":strings",
+@@ -698,12 +704,13 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "cordz_test_helpers",
+     testonly = 1,
+-    hdrs = ["cordz_test_helpers.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["cordz_test_helpers.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":cord",
+         ":cord_internal",
+@@ -1106,19 +1113,20 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "str_format",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "str_format.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":str_format_internal",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "str_format_internal",
+     srcs = [
+         "internal/str_format/arg.cc",
+@@ -1128,7 +1136,8 @@ cc_library(
+         "internal/str_format/output.cc",
+         "internal/str_format/parser.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/str_format/arg.h",
+         "internal/str_format/bind.h",
+         "internal/str_format/checker.h",
+@@ -1137,8 +1146,7 @@ cc_library(
+         "internal/str_format/output.h",
+         "internal/str_format/parser.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         ":strings",
+@@ -1258,12 +1266,13 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "pow10_helper",
+     testonly = True,
+     srcs = ["internal/pow10_helper.cc"],
+-    hdrs = ["internal/pow10_helper.h"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/pow10_helper.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = ["//absl/base:config"],
+ )
+diff --git a/absl/synchronization/BUILD.bazel b/absl/synchronization/BUILD.bazel
+index 64d3b929..375e9540 100644
+--- a/absl/synchronization/BUILD.bazel
++++ b/absl/synchronization/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -26,18 +27,16 @@ package(default_visibility = ["//visibility:public"])
+ licenses(["notice"])
+ 
+ # Internal data structure for efficiently detecting mutex dependency cycles
+-cc_library(
++ll_library(
+     name = "graphcycles_internal",
+     srcs = [
+         "internal/graphcycles.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/graphcycles.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS + select({
+-        "//conditions:default": [],
+-    }),
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -51,11 +50,12 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "kernel_timeout_internal",
+-    hdrs = ["internal/kernel_timeout.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/kernel_timeout.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl/synchronization:__pkg__",
+     ],
+@@ -66,7 +66,7 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "synchronization",
+     srcs = [
+         "barrier.cc",
+@@ -77,7 +77,8 @@ cc_library(
+         "mutex.cc",
+         "notification.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "barrier.h",
+         "blocking_counter.h",
+         "internal/create_thread_identity.h",
+@@ -87,13 +88,7 @@ cc_library(
+         "mutex.h",
+         "notification.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = select({
+-        "//absl:msvc_compiler": [],
+-        "//absl:clang-cl_compiler": [],
+-        "//absl:wasm": [],
+-        "//conditions:default": ["-pthread"],
+-    }) + ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         ":graphcycles_internal",
+         ":kernel_timeout_internal",
+@@ -189,11 +184,13 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "thread_pool",
+     testonly = 1,
+-    hdrs = ["internal/thread_pool.h"],
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["internal/thread_pool.h"],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl:__subpackages__",
+     ],
+@@ -223,12 +220,13 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "mutex_benchmark_common",
+     testonly = 1,
+     srcs = ["mutex_benchmark.cc"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [],
++    transitive_relative_includes = [""],
+     visibility = [
+         "//absl/synchronization:__pkg__",
+     ],
+@@ -239,7 +237,6 @@ cc_library(
+         "//absl/base:config",
+         "@com_github_google_benchmark//:benchmark_main",
+     ],
+-    alwayslink = 1,
+ )
+ 
+ cc_binary(
+@@ -266,12 +263,13 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "per_thread_sem_test_common",
+     testonly = 1,
+     srcs = ["internal/per_thread_sem_test.cc"],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [],
++    transitive_relative_includes = [""],
+     deps = [
+         ":synchronization",
+         "//absl/base",
+@@ -280,7 +278,6 @@ cc_library(
+         "//absl/time",
+         "@com_google_googletest//:gtest",
+     ],
+-    alwayslink = 1,
+ )
+ 
+ cc_test(
+diff --git a/absl/time/BUILD.bazel b/absl/time/BUILD.bazel
+index aa07df3d..57ea40c5 100644
+--- a/absl/time/BUILD.bazel
++++ b/absl/time/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,24 +26,24 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "time",
+     srcs = [
+         "civil_time.cc",
+         "clock.cc",
+         "duration.cc",
+         "format.cc",
+-        "internal/get_current_time_chrono.inc",
+-        "internal/get_current_time_posix.inc",
+         "time.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "civil_time.h",
+         "clock.h",
++        "internal/get_current_time_chrono.inc",
++        "internal/get_current_time_posix.inc",
+         "time.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base",
+         "//absl/base:core_headers",
+@@ -54,16 +55,16 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "test_util",
+     testonly = 1,
+-    srcs = [
+-        "internal/test_util.cc",
++    srcs = ["internal/test_util.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
++        "internal/test_util.h",
+         "internal/zoneinfo.inc",
+     ],
+-    hdrs = ["internal/test_util.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         ":time",
+diff --git a/absl/time/internal/cctz/BUILD.bazel b/absl/time/internal/cctz/BUILD.bazel
+index 7304d40d..378f8bda 100644
+--- a/absl/time/internal/cctz/BUILD.bazel
++++ b/absl/time/internal/cctz/BUILD.bazel
+@@ -12,6 +12,8 @@
+ #   See the License for the specific language governing permissions and
+ #   limitations under the License.
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
++
+ package(features = ["-parse_headers"])
+ 
+ licenses(["notice"])
+@@ -37,50 +39,45 @@ config_setting(
+ 
+ ### libraries
+ 
+-cc_library(
++ll_library(
+     name = "civil_time",
+     srcs = ["src/civil_time_detail.cc"],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "include/cctz/civil_time.h",
++        "include/cctz/civil_time_detail.h",
+     ],
+-    textual_hdrs = ["include/cctz/civil_time_detail.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:public"],
+     deps = ["//absl/base:config"],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "time_zone",
+     srcs = [
+         "src/time_zone_fixed.cc",
+-        "src/time_zone_fixed.h",
+         "src/time_zone_format.cc",
+         "src/time_zone_if.cc",
+-        "src/time_zone_if.h",
+         "src/time_zone_impl.cc",
+-        "src/time_zone_impl.h",
+         "src/time_zone_info.cc",
+-        "src/time_zone_info.h",
+         "src/time_zone_libc.cc",
+-        "src/time_zone_libc.h",
+         "src/time_zone_lookup.cc",
+         "src/time_zone_posix.cc",
+-        "src/time_zone_posix.h",
+-        "src/tzfile.h",
+         "src/zone_info_source.cc",
+     ],
+-    hdrs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "include/cctz/time_zone.h",
+         "include/cctz/zone_info_source.h",
++        "src/time_zone_fixed.h",
++        "src/time_zone_if.h",
++        "src/time_zone_impl.h",
++        "src/time_zone_info.h",
++        "src/time_zone_libc.h",
++        "src/time_zone_posix.h",
++        "src/tzfile.h",
+     ],
+-    linkopts = select({
+-        ":osx": [
+-            "-framework Foundation",
+-        ],
+-        ":ios": [
+-            "-framework Foundation",
+-        ],
+-        "//conditions:default": [],
+-    }),
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:public"],
+     deps = [
+         ":civil_time",
+diff --git a/absl/types/BUILD.bazel b/absl/types/BUILD.bazel
+index bb801012..e969e72a 100644
+--- a/absl/types/BUILD.bazel
++++ b/absl/types/BUILD.bazel
+@@ -13,6 +13,7 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -24,11 +25,12 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "any",
+-    hdrs = ["any.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["any.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":bad_any_cast",
+         "//absl/base:config",
+@@ -39,25 +41,24 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "bad_any_cast",
+-    hdrs = ["bad_any_cast.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["bad_any_cast.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         ":bad_any_cast_impl",
+         "//absl/base:config",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "bad_any_cast_impl",
+-    srcs = [
+-        "bad_any_cast.cc",
+-        "bad_any_cast.h",
+-    ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = ["bad_any_cast.cc"],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["bad_any_cast.h"],
++    transitive_relative_includes = [""],
+     visibility = ["//visibility:private"],
+     deps = [
+         "//absl/base:config",
+@@ -96,16 +97,14 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "span",
+-    srcs = [
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/span.h",
+-    ],
+-    hdrs = [
+         "span.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/algorithm",
+         "//absl/base:core_headers",
+@@ -133,12 +132,14 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "optional",
+-    srcs = ["internal/optional.h"],
+-    hdrs = ["optional.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
++        "internal/optional.h",
++        "optional.h",
++    ],
++    transitive_relative_includes = [""],
+     deps = [
+         ":bad_optional_access",
+         "//absl/base:base_internal",
+@@ -150,24 +151,24 @@ cc_library(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "bad_optional_access",
+     srcs = ["bad_optional_access.cc"],
+-    hdrs = ["bad_optional_access.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["bad_optional_access.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:raw_logging_internal",
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "bad_variant_access",
+     srcs = ["bad_variant_access.cc"],
+-    hdrs = ["bad_variant_access.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["bad_variant_access.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:config",
+         "//absl/base:raw_logging_internal",
+@@ -207,10 +208,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "conformance_testing",
+     testonly = 1,
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "internal/conformance_aliases.h",
+         "internal/conformance_archetype.h",
+         "internal/conformance_profile.h",
+@@ -219,8 +222,7 @@ cc_library(
+         "internal/parentheses.h",
+         "internal/transform_args.h",
+     ],
+-    copts = ABSL_TEST_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/algorithm:container",
+         "//absl/meta:type_traits",
+@@ -245,12 +247,14 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "variant",
+-    srcs = ["internal/variant.h"],
+-    hdrs = ["variant.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
++        "internal/variant.h",
++        "variant.h",
++    ],
++    transitive_relative_includes = [""],
+     deps = [
+         ":bad_variant_access",
+         "//absl/base:base_internal",
+@@ -310,11 +314,12 @@ cc_test(
+     ],
+ )
+ 
+-cc_library(
++ll_library(
+     name = "compare",
+-    hdrs = ["compare.h"],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = ["compare.h"],
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:core_headers",
+         "//absl/meta:type_traits",
+diff --git a/absl/utility/BUILD.bazel b/absl/utility/BUILD.bazel
+index ca4bc0a6..dd1c30b4 100644
+--- a/absl/utility/BUILD.bazel
++++ b/absl/utility/BUILD.bazel
+@@ -14,6 +14,7 @@
+ # limitations under the License.
+ #
+ 
++load("@rules_ll//ll:defs.bzl", "ll_library")
+ load(
+     "//absl:copts/configure_copts.bzl",
+     "ABSL_DEFAULT_COPTS",
+@@ -25,13 +26,14 @@ package(default_visibility = ["//visibility:public"])
+ 
+ licenses(["notice"])
+ 
+-cc_library(
++ll_library(
+     name = "utility",
+-    hdrs = [
++    srcs = [],
++    compile_flags = ["-std=c++20"],
++    transitive_hdrs = [
+         "utility.h",
+     ],
+-    copts = ABSL_DEFAULT_COPTS,
+-    linkopts = ABSL_DEFAULT_LINKOPTS,
++    transitive_relative_includes = [""],
+     deps = [
+         "//absl/base:base_internal",
+         "//absl/base:config",

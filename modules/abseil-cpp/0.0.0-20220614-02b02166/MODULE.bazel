@@ -1,0 +1,6 @@
+module(
+    name="abseil-cpp",
+    version="0.0.0-20220614-02b02166",
+    compatibility_level = 1,
+)
+bazel_dep(name = "rules_ll", version = "20220612.0")
