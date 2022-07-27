@@ -1,0 +1,24 @@
+module(
+    name = "rules_flex",
+    version = "0.0.0-c40bf6a",
+    toolchains_to_register = [
+        "@rules_flex//flex/toolchains:v2.6.4",
+    ],
+)
+
+bazel_dep(name = "rules_m4", version = "0.2.1")
+
+initialize_flex_toolchains = use_extension(
+    "@rules_flex//:extensions.bzl",
+    "initialize_flex_toolchains",
+)
+
+initialize_flex_toolchains.configure(
+    version = "2.6.4",
+    extra_copts = [],
+)
+
+use_repo(
+    initialize_flex_toolchains,
+    "flex_v2.6.4",
+)
