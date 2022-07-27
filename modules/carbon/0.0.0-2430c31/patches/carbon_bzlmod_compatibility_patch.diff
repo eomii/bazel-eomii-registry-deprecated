@@ -1,0 +1,104 @@
+diff --git a/MODULE.bazel b/MODULE.bazel
+new file mode 100644
+index 0000000..64f14e8
+--- /dev/null
++++ b/MODULE.bazel
+@@ -0,0 +1,29 @@
++module(
++    name = "carbon",
++    version = "0.0.0-2430c31",
++)
++
++bazel_dep(name = "rules_cc", version = "0.0.1")
++bazel_dep(name = "rules_m4", version = "0.2.1")
++bazel_dep(name = "rules_flex", version = "0.0.0-c40bf6a")
++bazel_dep(name = "rules_bison", version = "0.0.0-8b72bc3")
++
++# Import the LLVM project via rules_ll.
++bazel_dep(name = "rules_ll", version = "20220723.1")
++
++llvm_project_overlay = use_extension(
++    "@rules_ll//ll:extensions.bzl",
++    "llvm_project_overlay",
++)
++
++llvm_project_overlay.configure(
++    commit = "474c873148b1441f1dd7a2b269441a1b20e30aa2",
++    sha256 = "9cd2fbb8e53f1179072bf7b97e63009cef58fc8b91bf27400963a379ed623818",
++    targets = ["X86"],
++)
++
++use_repo(
++    llvm_project_overlay,
++    "llvm-project",
++    "llvm-raw",
++)
+diff --git a/explorer/BUILD b/explorer/BUILD
+index 4b2c3d8..f8590ff 100644
+--- a/explorer/BUILD
++++ b/explorer/BUILD
+@@ -11,6 +11,7 @@ package(default_visibility = [
+ filegroup(
+     name = "standard_libraries",
+     srcs = ["data/prelude.carbon"],
++    visibility = ["//visibility:public"],
+ )
+ 
+ cc_library(
+@@ -35,6 +36,7 @@ cc_binary(
+         ":main",
+         "@llvm-project//llvm:Support",
+     ],
++    visibility = ["//visibility:public"],
+ )
+ 
+ py_binary(
+diff --git a/explorer/ast/BUILD b/explorer/ast/BUILD
+index 689b81a..82d79e6 100644
+--- a/explorer/ast/BUILD
++++ b/explorer/ast/BUILD
+@@ -14,7 +14,7 @@ genrule(
+     cmd = "./$(location //explorer:gen_rtti)" +
+           " $(location ast_rtti.txt)" +
+           " $(location ast_rtti.h) $(location ast_rtti.cpp)" +
+-          " $(rootpath ast_rtti.h)",
++          " ast_rtti.h",
+     tools = ["//explorer:gen_rtti"],
+ )
+ 
+@@ -26,9 +26,11 @@ cc_library(
+     ],
+     hdrs = [
+         "ast_node.h",
+-        "ast_rtti.h",
++        ":ast_rtti",
+     ],
++    include_prefix = ".",
+     deps = [
++        ":ast_rtti",
+         "//explorer/common:source_location",
+         "@llvm-project//llvm:Support",
+     ],
+diff --git a/explorer/gen_rtti.py b/explorer/gen_rtti.py
+index 4356df7..eaaf50f 100755
+--- a/explorer/gen_rtti.py
++++ b/explorer/gen_rtti.py
+@@ -234,7 +234,7 @@ def main() -> None:
+     sys.stdout = header_file
+ 
+     print(f"// Generated from {input_filename} by explorer/gen_rtti.py\n")
+-    trans_table = str.maketrans({"/": "_", ".": "_"})
++    trans_table = str.maketrans({"/": "_", ".": "_", "@": "_"})
+     guard_macro = input_filename.upper().translate(trans_table) + "_"
+     print(f"#ifndef {guard_macro}")
+     print(f"#define {guard_macro}")
+diff --git a/toolchain/driver/BUILD b/toolchain/driver/BUILD
+index 3862644..3e88ecf 100644
+--- a/toolchain/driver/BUILD
++++ b/toolchain/driver/BUILD
+@@ -54,4 +54,5 @@ cc_binary(
+         ":driver",
+         "@llvm-project//llvm:Support",
+     ],
++    visibility = ["//visibility:public"],
+ )

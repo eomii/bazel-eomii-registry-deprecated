@@ -1,0 +1,29 @@
+module(
+    name = "carbon",
+    version = "0.0.0-2430c31",
+)
+
+bazel_dep(name = "rules_cc", version = "0.0.1")
+bazel_dep(name = "rules_m4", version = "0.2.1")
+bazel_dep(name = "rules_flex", version = "0.0.0-c40bf6a")
+bazel_dep(name = "rules_bison", version = "0.0.0-8b72bc3")
+
+# Import the LLVM project via rules_ll.
+bazel_dep(name = "rules_ll", version = "20220723.1")
+
+llvm_project_overlay = use_extension(
+    "@rules_ll//ll:extensions.bzl",
+    "llvm_project_overlay",
+)
+
+llvm_project_overlay.configure(
+    commit = "474c873148b1441f1dd7a2b269441a1b20e30aa2",
+    sha256 = "9cd2fbb8e53f1179072bf7b97e63009cef58fc8b91bf27400963a379ed623818",
+    targets = ["X86"],
+)
+
+use_repo(
+    llvm_project_overlay,
+    "llvm-project",
+    "llvm-raw",
+)

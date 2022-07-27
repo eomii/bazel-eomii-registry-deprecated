@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-WCPzY4IvM4txYOsmBUyW7Utz7UMQhSUkERwHBeIetmc=",
+    "patch_strip": 1,
+    "patches": {
+        "carbon_bzlmod_compatibility_patch.diff": "sha256-50IUEwU4vQ05MisMO5QZ3l4PO3bL312+OUx5cnsUtw8="
+    },
+    "strip_prefix": "carbon-lang-2430c31ea277c085929e68dd48455e76091357cd",
+    "url": "https://github.com/carbon-language/carbon-lang/archive/2430c31ea277c085929e68dd48455e76091357cd.tar.gz"
+}
