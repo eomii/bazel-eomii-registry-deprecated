@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-jeK7N9pJbFExSY2WmGRhB+feui+7T/S3YDx77Z8ifZ4=",
+    "patch_strip": 1,
+    "patches": {
+        "rules_m4_bzlmod_compatibility_patch.diff": "sha256-rOlvP28ra02rH5W4BTbjilmHYLIo6Ta4hNPlnt83sqQ="
+    },
+    "strip_prefix": "rules_m4-0.2.1",
+    "url": "https://github.com/jmillikin/rules_m4/archive/refs/tags/v0.2.1.zip"
+}
