@@ -80,7 +80,7 @@ index 689b81a..82d79e6 100644
          "@llvm-project//llvm:Support",
      ],
 diff --git a/explorer/gen_rtti.py b/explorer/gen_rtti.py
-index 4356df7..eaaf50f 100755
+index 4356df7..63f9a90 100755
 --- a/explorer/gen_rtti.py
 +++ b/explorer/gen_rtti.py
 @@ -234,7 +234,7 @@ def main() -> None:
@@ -88,7 +88,7 @@ index 4356df7..eaaf50f 100755
  
      print(f"// Generated from {input_filename} by explorer/gen_rtti.py\n")
 -    trans_table = str.maketrans({"/": "_", ".": "_"})
-+    trans_table = str.maketrans({"/": "_", ".": "_", "@": "_"})
++    trans_table = str.maketrans({"/": "_", ".": "_", "@": "_", "-": "_"})
      guard_macro = input_filename.upper().translate(trans_table) + "_"
      print(f"#ifndef {guard_macro}")
      print(f"#define {guard_macro}")
