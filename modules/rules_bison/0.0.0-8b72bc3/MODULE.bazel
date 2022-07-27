@@ -1,0 +1,24 @@
+module(
+    name = "rules_bison",
+    version = "0.0.0-8b72bc3",
+    toolchains_to_register = [
+        "@rules_bison//bison/toolchains:v3.3.2",
+    ]
+)
+
+bazel_dep(name = "rules_m4", version = "0.2.1")
+
+initialize_bison_toolchains = use_extension(
+    "@rules_bison//:extensions.bzl",
+    "initialize_bison_toolchains",
+)
+
+initialize_bison_toolchains.configure(
+    version = "3.3.2",
+    extra_copts = [],
+)
+
+use_repo(
+    initialize_bison_toolchains,
+    "bison_v3.3.2",
+)

@@ -1,0 +1,64 @@
+diff --git a/MODULE.bazel b/MODULE.bazel
+new file mode 100644
+index 0000000..8f5d46a
+--- /dev/null
++++ b/MODULE.bazel
+@@ -0,0 +1,24 @@
++module(
++    name = "rules_bison",
++    version = "0.0.0-8b72bc3",
++    toolchains_to_register = [
++        "@rules_bison//bison/toolchains:v3.3.2",
++    ]
++)
++
++bazel_dep(name = "rules_m4", version = "0.2.1")
++
++initialize_bison_toolchains = use_extension(
++    "@rules_bison//:extensions.bzl",
++    "initialize_bison_toolchains",
++)
++
++initialize_bison_toolchains.configure(
++    version = "3.3.2",
++    extra_copts = [],
++)
++
++use_repo(
++    initialize_bison_toolchains,
++    "bison_v3.3.2",
++)
+diff --git a/extensions.bzl b/extensions.bzl
+new file mode 100644
+index 0000000..a2b012c
+--- /dev/null
++++ b/extensions.bzl
+@@ -0,0 +1,28 @@
++load("@rules_bison//bison/internal:repository.bzl", "bison_repository")
++load("@rules_bison//bison/internal:versions.bzl", "DEFAULT_VERSION", "check_version")
++
++def _initialize_bison_toolchains_impl(module_ctx):
++
++    for module in module_ctx.modules:
++        version = module.tags.configure[0].version
++        extra_copts = module.tags.configure[0].extra_copts
++
++    check_version(version)
++    repo_name = "bison_v{}".format(version)
++    bison_repository(
++        name = repo_name,
++        version = DEFAULT_VERSION,
++        extra_copts = extra_copts,
++    )
++
++initialize_bison_toolchains = module_extension(
++    implementation = _initialize_bison_toolchains_impl,
++    tag_classes = {
++        "configure": tag_class(
++            attrs = {
++                "version": attr.string(),
++                "extra_copts": attr.string_list(),
++            },
++        ),
++    }
++)
