@@ -2,7 +2,7 @@
     "integrity": "sha256-ffqAoLJzYkgbwxci/xMgQiKvzGkWQ55XQnM0eA+RDoI=",
     "patch_strip": 1,
     "patches": {
-        "rules_flex_bzlmod_compatibility_patch.diff": "sha256-5j1242JQb6K8EM/N9u++JVNHX346EUoPCY7XvkbZBb8="
+        "rules_flex_bzlmod_compatibility_patch.diff": "sha256-t+2qcd73CwoyglZGGXjEn9HcwF/3mgpMTnpGwmqLuRI="
     },
     "strip_prefix": "rules_flex-c40bf6a62dfcd4e849eef9bf1489f75ee987944e",
     "url": "https://github.com/jmillikin/rules_flex/archive/c40bf6a62dfcd4e849eef9bf1489f75ee987944e.tar.gz"

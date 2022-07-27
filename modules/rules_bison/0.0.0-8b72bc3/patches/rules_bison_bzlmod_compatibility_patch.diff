@@ -21,7 +21,7 @@ index 0000000..8f5d46a
 +
 +initialize_bison_toolchains.configure(
 +    version = "3.3.2",
-+    extra_copts = [],
++    extra_copts = ["-w"],
 +)
 +
 +use_repo(

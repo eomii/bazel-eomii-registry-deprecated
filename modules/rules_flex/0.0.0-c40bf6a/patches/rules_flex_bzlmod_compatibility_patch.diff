@@ -21,7 +21,7 @@ index 0000000..656ae31
 +
 +initialize_flex_toolchains.configure(
 +    version = "2.6.4",
-+    extra_copts = [],
++    extra_copts = ["-w"],
 +)
 +
 +use_repo(

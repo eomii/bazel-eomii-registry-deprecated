@@ -2,7 +2,7 @@
     "integrity": "sha256-uoqK9tDR8/H/1kOUdqz7F7JJDrxKIzSDxKw8xtb31II=",
     "patch_strip": 1,
     "patches": {
-        "rules_bison_bzlmod_compatibility_patch.diff": "sha256-LhNL/yxs0rWWViy93clsIpuah7tDlACwpNFH+ubMwsY="
+        "rules_bison_bzlmod_compatibility_patch.diff": "sha256-jFQI8Ivt+dXDjOZx+XMgexosCjJaJhW8Zy5mjkER0NM="
     },
     "strip_prefix": "rules_bison-8b72bc32c877d8d148405598aac46c8c2bb34d07",
     "url": "https://github.com/jmillikin/rules_bison/archive/8b72bc32c877d8d148405598aac46c8c2bb34d07.tar.gz"
