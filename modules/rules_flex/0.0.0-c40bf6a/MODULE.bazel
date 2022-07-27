@@ -15,7 +15,7 @@ initialize_flex_toolchains = use_extension(
 
 initialize_flex_toolchains.configure(
     version = "2.6.4",
-    extra_copts = [],
+    extra_copts = ["-w"],
 )
 
 use_repo(

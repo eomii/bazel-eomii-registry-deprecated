@@ -15,7 +15,7 @@ initialize_bison_toolchains = use_extension(
 
 initialize_bison_toolchains.configure(
     version = "3.3.2",
-    extra_copts = [],
+    extra_copts = ["-w"],
 )
 
 use_repo(
