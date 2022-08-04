@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-lVFFenbsRB1flKX6tuIRxRnjwlpHb86y9wzFOqmWXLs=",
+    "patch_strip": 1,
+    "patches": {
+        "json_bzlmod_compatibility_patch.diff": "sha256-5vXKRSYDAK/ktIIl84KqnzVUSYYi/tAsFYjEJ67ViUE="
+    },
+    "strip_prefix": "json-3.11.1",
+    "url": "https://github.com/nlohmann/json/archive/refs/tags/v3.11.1.zip"
+}
