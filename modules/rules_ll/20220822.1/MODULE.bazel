@@ -1,0 +1,64 @@
+module(
+    name = "rules_ll",
+    version = "20220822.1",
+    execution_platforms_to_register = [
+        "@rules_ll//ll:ll_linux_exec_platform",
+    ],
+    compatibility_level = 0,
+    toolchains_to_register = [
+        "@rules_ll//ll:ll_toolchain",
+    ],
+)
+
+# Platform support.
+bazel_dep(name = "platforms", version = "0.0.4")
+
+# Various utility functions. Mostly used for easier path manipulations.
+bazel_dep(name = "bazel_skylib", version = "1.2.0")
+
+# Documentation.
+bazel_dep(name = "stardoc", version = "0.5.0")
+
+# Required by the original Clang/LLVM overlay.
+bazel_dep(name = "rules_cc", version = "0.0.1")
+
+# hipSYCL. In development.
+# bazel_dep(name = "hipsycl", version = "0.9.2")
+
+# Build Clang/LLVM with zlib support.
+bazel_dep(name = "zlib", version = "1.2.11")
+
+# Configure the llvm-project Bazel overlay.
+llvm_project_overlay = use_extension(
+    "@rules_ll//ll:extensions.bzl",
+    "llvm_project_overlay",
+)
+llvm_project_overlay.configure(
+    commit = "fdbb15355e7977b914cbd7e753b5e909d735ad83",
+    sha256 = "8a6b55ac0a2ee32c9cdd9677aa1f4b6fa82edab36388929691aa02ee7789a9a0",
+    targets = ["AMDGPU", "NVPTX", "X86"],
+)
+use_repo(
+    llvm_project_overlay,
+    "llvm-project",
+    "llvm-raw",
+)
+
+# Set up dependencies for rules_ll.
+rules_ll_dependencies = use_extension(
+    "@rules_ll//ll:init.bzl",
+    "rules_ll_dependencies",
+)
+rules_ll_dependencies.configure(
+    local_library_path = "autodetect",
+)
+use_repo(
+    rules_ll_dependencies,
+    "local_library_path",
+    "hip",
+    "hipamd",
+    "cuda_cudart",
+    "cuda_nvcc",
+    "cuda_nvprof",
+    "libcurand",
+)
