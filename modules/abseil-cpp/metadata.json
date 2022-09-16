@@ -2,7 +2,8 @@
     "homepage": "https://github.com/abseil/abseil-cpp",
     "maintainers": [],
     "versions": [
-        ""0.0.0-20220614-02b02166"
+        "0.0.0-20220614-02b02166",
+        "0.0.0-20220916-ab2e2c4f"
     ],
     "yanked_versions": {}
 }

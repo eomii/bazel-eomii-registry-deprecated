@@ -69,7 +69,7 @@ printf 'module(
     version="%s",
     compatibility_level = 1,
 )
-bazel_dep(name = "rules_ll", version = "20220612.0")' $version >> MODULE.bazel
+bazel_dep(name = "rules_ll", version = "20220905.0")' $version >> MODULE.bazel
 
 git add MODULE.bazel absl/*
 git diff --staged >> ../abseil_rules_ll_patch.diff

@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-L28oJs7s6iX69phUY9ss4vRO8PYvXTQ8wvpkoVYmamw=",
+    "patch_strip": 1,
+    "patches": {
+        "abseil_rules_ll_patch.diff": "sha256-ATCyi9VyGW53HAlDTzBN16YFHapCo7xzr7REhK2YAPc="
+    },
+    "strip_prefix": "abseil-cpp-ab2e2c4f6062999afaf960759dfccb77f350c702",
+    "url": "https://github.com/abseil/abseil-cpp/archive/ab2e2c4f6062999afaf960759dfccb77f350c702.tar.gz"
+}
